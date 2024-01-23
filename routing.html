@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eye Loca - Routing</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+
+    <!-- leaflet JS -->
+    <!-- Make sure you put this AFTER Leaflet's CSS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+    <style>
+        #map {
+            width: 100%;
+            height: 100vh;
+            flex: 70;
+            background-color: #e0e0e0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        #container {
+            display: flex;
+            height: 100vh;
+            /* 100% tinggi viewport */
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="container">
+        <div id="map"></div>
+    </div>
+
+</body>
+
+<script>
+    var motorIcon = L.icon({
+        iconUrl: "img/motor.png",
+        iconSize: [92, 82], // set the size of the icon
+        iconAnchor: [16, 32], // set the anchor point of the icon
+        popupAnchor: [0, -32] // set the popup anchor to show above the marker
+    });
+
+    var map = L.map('map').setView([-6.181202, 106.812478], 15);
+
+    //OSM
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    var marker = L.marker([-6.181202, 106.812478], { icon: motorIcon }).addTo(map);
+
+    // klik lokasi
+    map.on("click", function (e) {
+        console.log(e);
+        var secondMarker = L.marker([e.latlng.lat, e.latlng.lng]).addTo(map);
+
+        // Routing
+        L.Routing.control({
+            waypoints: [
+                L.latLng(-6.181202, 106.812478),
+                L.latLng(e.latlng.lat, e.latlng.lng)
+            ]
+        }).on('routesfound', function (e) {
+            console.log(e);
+            e.routes[0].coordinates.forEach(function (coord, index) {
+                setTimeout(() => {
+                    marker.setLatLng([coord.lat, coord.lng])
+                }, 100 * index)
+            })
+        }).addTo(map);
+    })
+    // Routing
+    // L.Routing.control({
+    //     waypoints: [
+    //         L.latLng(-6.181202, 106.812478),
+    //         L.latLng(-6.179211, 106.816257)
+    //     ]
+    // }).addTo(map);
+
+
+
+    // L.marker([-6.175487, 106.818376]).addTo(map)
+    //     .bindPopup('A pretty CSS popup.<br> Easily customizable.')
+    //     .openPopup();
+</script>
+
+</html>
